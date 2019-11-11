@@ -1,0 +1,26 @@
+sudo: required
+
+services:
+  - docker
+
+language: go
+
+go:
+  - '1.5'
+
+env:
+  global:
+    - secure: "AMjKpuz9AQ05X/30dJj8cHUmGtpqyq0BTgUs89iPflU10WN4RAd2pyxVLsRBvnB+dT36jH3bugZaR/D0Fqi330x+LfVKqXKd2NAmhyVzw4lQ9pTTuSciXMu7wElxgi2Pcl/e8pgbSaDEV+rDI3zS1Zok707oIsiuVEXDEMNhtEt1hyalr1eHgq9D5f3oHiYA2HYzIlxK84GdTilqvRlqe4BxeBnhVjq1jAsvAT93CTBFP/IYNoKQq9+/NRBb6HM0HETmk4cdYcWER+kRUVWPz9tq6fe9IZ8Y81CRTfi/+XReU6H1PE+HP5gxzwTLR2abcGpqD+nfkFQ8mn/vK/IEYxgnoWlFYxvQucODt3XEIUNn8lOfe0ReR9qB6n/xD9iSTV6FvAfu+3poOBKrIqVOv5IdnQo+6vhTDUjYwZpKTV9/iEICnk7IS+Oj5Gjnlh5zguNUuvqbm0DQV/U8I5htsaM8CsDJQIwaazinIVOVY3huB3IZ+qJ10tklg06B/8FhltDy7G1fH4GjO03u6HvXhUNJ4raeQwfvKXuKUvytAZDHqeo5Wvp7Z1dEnXUPGyCZL6LgwuhcMh/VOAMjKhJE1+K8ueYUn+Rc3/spkv8LvM8WW9l4Hg7F+rwQPRCpsEHq/bayn1rset7Z29WD6JAi9twWx4N5Y3R3qVkvdwooxy0=" # DOCKER_EMAIL
+    - secure: "jDe6CyNTj9XsK8nIItP33m8FpWw/zNVLReCnzJJbW44KK7ULILkOiQfnotXyHvikzp5EAa+flY8Z3nR2exKDjjF6uVZUK2NcVxt31FiutQJcl3Le1brmq7CxJ+t0AxyJn4NkEAW5eeTnJ2tJlP1RXdoYKsbaA+P00BaxuepzWSKGNWsmJErez8VNV1ilpAvP0jQQAZ/cI4kS03ZEUQLCV7tAaHj2vpyIjGN1iCgfs9WJ6ZnZ7ri7tkRKzJYk6UI0RQojjf7Z1/WRa6QbHY2ul1itrV7cV2rZ6OJbjy6QXfCYn+YGy10L0UvP2C79HAoauDdDKZwtgkdk2R8oTe2tbrt5DgPjX9qYotIuSh9xMIavrm6WWzeZaKLXOsfZxiehvFpvCRPRCXdVq+LYpnpe4jvEQ7dbnKRXZUDAz1cej3Zj69HhpeADMa1niarDZAlGylfMFoSKGE71CWdLwT0PcguFdzNSC9bJR0dgnRZUg67qf7HN6uo0BsbvI1WkPglFSKuFEgO8eZvXUC0Yezk2lFiDZrYSud9CKvjgyYVaenLtAQEAmyPOL0RNd2LLNgVZWmAlFI27Z+arHxHHgjImQUmaGQg2S8ecz1Q3TIcwYrrrY70uPkkuGZR40Ck9LB6ZEAHn7Hs902W3wv3/4HNwVz3YxwxUh8eRmkqubpENReU=" # DOCKER_USER
+    - secure: "Kr3n1TiSFS3t4fSjet9vVudNsKm4BpCRWSJAUkdBxGvuDOTo1GScj8UE6pQpLjeApqBk1VERinOUumujrK5qovyj68ZxRbi8ANtKifv1ltTRW8jyDhJPhDBh5hseyXrWqN5X9zXbu0kl/AsEgkRwM/3RDqXvrD4aNPbRXZ4JQfpuB/r4rPk36peLpU500kAwr09arY+HS8IckFamJ0Xy/GtCEZ/dGa79KarItutLPPlgoPGyIL7AIMp9LlisEW0Oq56P6nak1pLDAgsSePeo67lDkt4otq++vTJdS58VQnRjvL6ZpB/dQUd5OpuimP7Xch+8T46MnTFFTQIXmGSIVz7XyLfhPayq93MnbBPgYjsVx3Ru3+oZA2HnIOBSNdm1nALZgckC18FEzcdTsG83XAVznQZOSXCUMr1rBIhJkotsWYcOIgE8buaJnn6cAhrVp3ak8uMQaT1Mk1Silx82zteLgXGJElflRJ3GM0/q7jE/WfeJLE2vN+wQ/jeJ/ik+dGXoKSDs/XXNSMoco+mlAyMtDq4F1sCKWXZKVuOgUSt2uysxIeTg/6XZ9+Vkzc88T/E/99ojLG6dF+Gef+VGIkurWc11ZUHh6dTnprogOjIoSAHJ0a1D6sbQ4Rm7FNVuU7Y9X6YcihfmRWxRlrhnXMDYZQtbj+enHWQMTyLjnxo=" # DOCKER_PASS
+    - COMMIT=${TRAVIS_COMMIT::8}
+
+after_success:
+  - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go
+  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+  - export REPO=sebestblog/travis-demo
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker build -f Dockerfile -t $REPO:$COMMIT .
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+  - docker push $REPO
