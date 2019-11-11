@@ -9,9 +9,6 @@ RUN apk update && apk upgrade \
     webpack \
   && mkdir -p /usr/src/app
 
-npm install gulp-cli -g
-npm install gulp -D
-
 WORKDIR /usr/src/app
 
 VOLUME /usr/src/app
