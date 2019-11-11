@@ -2,8 +2,9 @@ FROM alpine:latest
 
 RUN apk update && apk upgrade \
   && apk add nodejs npm yarn \
-  && npm install -g typescript
+  && npm install -g typescript \
+  && mkdir -p /usr/src/app
 
-RUN mkdir /app
+WORKDIR /usr/src/app
 
-VOLUME /app
+VOLUME /usr/src/app
