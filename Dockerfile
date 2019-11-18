@@ -7,6 +7,7 @@ RUN apk update && apk upgrade \
     npx \
     typescript \
     webpack \
+  && rm -rf /var/cache/apk/* \
   && mkdir -p /usr/src/app
 
 WORKDIR /usr/src/app
