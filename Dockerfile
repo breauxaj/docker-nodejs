@@ -1,7 +1,6 @@
-FROM alpine:latest
+FROM breauxaj/alpine:latest
 
-RUN apk update && apk upgrade \
-  && apk add nodejs npm yarn \
+RUN apk add nodejs npm yarn \
   && npm install -g \
     gulp-cli \
     npx \
